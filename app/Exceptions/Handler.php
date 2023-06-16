@@ -3,6 +3,9 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -26,5 +29,25 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+    }
+
+    public function render($request, Throwable $exception) {
+      if ($exception instanceof ValidationException) {
+        return response()->json([
+          'errors' => $exception->validator->errors(),
+        ], 422);
+      }
+
+      if ($exception instanceof NotFoundHttpException) {
+        return response()->json([
+          'errors' => 'Rota não encotrada',
+        ], 404);
+      }
+
+      Log::error('Internal Server Error', [$exception]);
+
+      return response()->json([
+        'message' => 'Ocorreu um erro interno no servidor.',
+      ], 500);
     }
 }
