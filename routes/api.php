@@ -20,4 +20,5 @@ Route::group([
 
 Route::middleware('jwt.verify')->group(function() {
   Route::post('/transactions' , [TransactionController::class, 'store']);
+  Route::post('/users/{id}/deposits' , [UserController::class, 'deposit']);
 });

@@ -4,14 +4,23 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UserPostRequest;
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Http\Requests\DepositRequest;
+use App\Services\CreateDepositService;
+use App\Services\CreateUserService;
 use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller {
     public function createUser(UserPostRequest $request) {
-      Log::debug("Requisição Create:USER", $request->all());
-      $user = User::create($request->all());
+      // Log::debug("Requisição Create:USER", $request->all());
 
-      return response()->json([$user]);
+      $createUserService = new CreateUserService();
+
+      return $createUserService->execute($request->all());
+    }
+
+    public function deposit(DepositRequest $request) {
+      $createDepositService = new CreateDepositService();
+
+      return $createDepositService->execute(auth()->user()->id, $request->value);
     }
 }

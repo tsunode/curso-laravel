@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
@@ -42,6 +43,18 @@ class Handler extends ExceptionHandler
         return response()->json([
           'errors' => 'Rota não encotrada',
         ], 404);
+      }
+
+      if ($exception instanceof AuthorizationException) {
+        return response()->json([
+          'errors' => 'Rota não autorizada',
+        ], 403);
+      }
+
+      if ($exception instanceof AppError) {
+        return response()->json([
+          'errors' => $exception->getMessage(),
+        ], $exception->getCode());
       }
 
       Log::error('Internal Server Error', [$exception]);

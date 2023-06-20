@@ -1,0 +1,22 @@
+<?php
+
+namespace App\Services;
+
+use App\Exceptions\AppError;
+use App\Models\User;
+
+class CreateDepositService {
+  public function execute(int $userId, float $value){
+    $userFound = User::find($userId);
+
+    if(is_null($userFound)) {
+      throw new AppError('User not found', 404);
+    }
+
+    $userFound->balance = $userFound->balance + $value;
+
+    $userFound->save();
+
+    return $userFound;
+  }
+}

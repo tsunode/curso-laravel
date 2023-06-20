@@ -54,7 +54,7 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['daily', 'slack'],
+            'channels' =>  ['slack', 'stdout'],
             'ignore_exceptions' => false,
         ],
 
@@ -101,8 +101,19 @@ return [
             'formatter' => env('LOG_STDERR_FORMATTER'),
             'with' => [
                 'stream' => 'php://stderr',
+                'level'=> 'debug'
             ],
             'processors' => [PsrLogMessageProcessor::class],
+        ],
+        'stdout' => [
+            'driver' => 'monolog',
+            'level' => env('LOG_LEVEL', 'debug'),
+            'handler' => StreamHandler::class,
+            // 'formatter' => env('LOG_STDOUT_FORMATTER'),
+            'formatter' => Monolog\Formatter\LineFormatter::class,
+            'with' => [
+                'stream' => 'php://stdout',
+            ],
         ],
 
         'syslog' => [
